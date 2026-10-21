@@ -10,7 +10,7 @@
     </author>
     <category citation-format="numeric"/>
     <category field="generic-base"/>
-    <summary>Numeric style based on the University of Leeds numeric crib sheet. Journal articles: Author. Title. Journal, Vol(issue), pp. start-end. (Year). Available from: DOI. No access date for DOI-linked articles.</summary>
+    <summary>Numeric style based on the University of Leeds numeric crib sheet. Journal articles: Author. Title. Journal, Vol(issue), pp. start-end. (Year). [Accessed dd/mm/yyyy]. Available from: DOI.</summary>
     <updated>2026-10-21T00:00:00+00:00</updated>
   </info>
 
@@ -68,6 +68,22 @@
     </group>
   </macro>
 
+  <macro name="accessed-date">
+    <!-- [Accessed dd/mm/yyyy] - only shown if an Accessed date exists -->
+    <choose>
+      <if variable="accessed">
+        <group prefix="[" suffix="]" delimiter=" ">
+          <text value="Accessed"/>
+          <date variable="accessed" delimiter="/">
+            <date-part name="day" form="numeric-leading-zeros"/>
+            <date-part name="month" form="numeric-leading-zeros"/>
+            <date-part name="year"/>
+          </date>
+        </group>
+      </if>
+    </choose>
+  </macro>
+
   <macro name="vol-issue">
     <!-- Vol(issue); issue only shown if it exists -->
     <group>
@@ -103,7 +119,7 @@
   </macro>
 
   <macro name="access-journal">
-    <!-- DOI preferred (no access date); URL only if there is no DOI -->
+    <!-- DOI preferred; URL only if there is no DOI (accessed date is shown after the year instead) -->
     <choose>
       <if variable="DOI">
         <text variable="DOI" prefix="Available from: https://doi.org/"/>
@@ -201,6 +217,7 @@
               </group>
             </group>
             <text macro="year" suffix="."/>
+            <text macro="accessed-date" suffix="."/>
             <text macro="access-journal"/>
           </group>
         </if>
