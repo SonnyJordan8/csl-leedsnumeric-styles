@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="utf-8"?>
+<style xmlns="http://purl.org/net/xbiblio/csl" class="in-text" version="1.0" default-locale="en-GB" page-range-format="expanded">
+  <info>
+    <title>University of Leeds Numeric (custom)</title>
+    <title-short>Leeds Numeric</title-short>
+    <id>https://github.com/SonnyJordan8/csl-leedsnumeric-styles/leeds-numeric-custom</id>
+    <link href="https://github.com/SonnyJordan8/csl-leedsnumeric-styles/blob/main/leeds-numeric-custom.csl" rel="self"/>
+    <author>
+      <name>Custom style</name>
+    </author>
+    <category citation-format="numeric"/>
+    <category field="generic-base"/>
+    <summary>Numeric style based on the University of Leeds numeric crib sheet. Journal articles: Author. Title. Journal, Vol(issue), pp. start-end. (Year). Available from: DOI. No access date for DOI-linked articles.</summary>
+    <updated>2026-10-21T00:00:00+00:00</updated>
+  </info>
+
+  <!-- ===================== LOCALE TWEAKS ===================== -->
+  <locale xml:lang="en">
+    <terms>
+      <term name="page" form="short">
+        <single>p.</single>
+        <multiple>pp.</multiple>
+      </term>
+      <term name="and">and</term>
+    </terms>
+  </locale>
+
+  <!-- ===================== MACROS ===================== -->
+  <macro name="author">
+    <names variable="author">
+      <name and="text" delimiter=", " delimiter-precedes-last="never" initialize-with="." name-as-sort-order="all" sort-separator=", " et-al-min="7" et-al-use-first="6"/>
+      <et-al font-style="italic"/>
+      <substitute>
+        <names variable="editor">
+          <name and="text" delimiter=", " delimiter-precedes-last="never" initialize-with="." name-as-sort-order="all" sort-separator=", " et-al-min="7" et-al-use-first="6"/>
+          <label form="short" prefix=" (" suffix=")"/>
+        </names>
+        <names variable="translator"/>
+      </substitute>
+    </names>
+  </macro>
+
+  <macro name="author-or-title-first">
+    <!-- If there is no author/editor, the entry starts with the title -->
+    <choose>
+      <if variable="author editor translator" match="any">
+        <text macro="author" suffix=". "/>
+        <text variable="title" suffix=". "/>
+      </if>
+      <else>
+        <text variable="title" suffix=". "/>
+      </else>
+    </choose>
+  </macro>
+
+  <macro name="year">
+    <group prefix="(" suffix=")">
+      <choose>
+        <if variable="issued">
+          <date variable="issued">
+            <date-part name="year"/>
+          </date>
+        </if>
+        <else>
+          <text term="no date" form="short"/>
+        </else>
+      </choose>
+    </group>
+  </macro>
+
+  <macro name="vol-issue">
+    <!-- Vol(issue); issue only shown if it exists -->
+    <group>
+      <text variable="volume"/>
+      <text variable="issue" prefix="(" suffix=")"/>
+    </group>
+  </macro>
+
+  <macro name="pages-or-article-number">
+    <!-- Page range if available, otherwise article number -->
+    <choose>
+      <if variable="page" match="all">
+        <choose>
+          <if is-numeric="page">
+            <group delimiter=" ">
+              <label variable="page" form="short" plural="contextual"/>
+              <text variable="page"/>
+            </group>
+          </if>
+          <else>
+            <!-- Non-numeric value in Pages (e.g. e12345 or Art. 105432) = article number: no p./pp. label -->
+            <text variable="page"/>
+          </else>
+        </choose>
+      </if>
+      <else-if variable="number">
+        <group delimiter=" ">
+          <text value="article no."/>
+          <text variable="number"/>
+        </group>
+      </else-if>
+    </choose>
+  </macro>
+
+  <macro name="access-journal">
+    <!-- DOI preferred (no access date); URL only if there is no DOI -->
+    <choose>
+      <if variable="DOI">
+        <text variable="DOI" prefix="Available from: https://doi.org/"/>
+      </if>
+      <else-if variable="URL">
+        <text variable="URL" prefix="Available from: "/>
+      </else-if>
+    </choose>
+  </macro>
+
+  <macro name="access-other">
+    <!-- Non-journal sources: DOI (no date) or URL with access date -->
+    <choose>
+      <if variable="DOI">
+        <text variable="DOI" prefix="Available from: https://doi.org/"/>
+      </if>
+      <else-if variable="URL">
+        <group delimiter=" ">
+          <text variable="URL" prefix="Available from: "/>
+          <group prefix="[" suffix="]">
+            <text term="accessed" suffix=" "/>
+            <date variable="accessed">
+              <date-part name="day" suffix=" "/>
+              <date-part name="month" suffix=" "/>
+              <date-part name="year"/>
+            </date>
+          </group>
+        </group>
+      </else-if>
+    </choose>
+  </macro>
+
+  <macro name="edition">
+    <choose>
+      <if is-numeric="edition">
+        <group delimiter=" ">
+          <number variable="edition" form="ordinal"/>
+          <text term="edition" form="short"/>
+        </group>
+      </if>
+      <else>
+        <text variable="edition"/>
+      </else>
+    </choose>
+  </macro>
+
+  <macro name="publisher">
+    <group delimiter=": ">
+      <text variable="publisher-place"/>
+      <text variable="publisher"/>
+    </group>
+  </macro>
+
+  <!-- ===================== IN-TEXT CITATION ===================== -->
+  <!-- Output: (1)  (1, p.24)  (1, pp.20-29)  (1, Chapter 2)  (1, 2) -->
+  <citation collapse="citation-number">
+    <sort>
+      <key variable="citation-number"/>
+    </sort>
+    <layout prefix="(" suffix=")" delimiter=", ">
+      <group delimiter=", ">
+        <text variable="citation-number"/>
+        <group>
+          <choose>
+            <if locator="page">
+              <label variable="locator" form="short" plural="contextual" suffix=""/>
+              <text variable="locator"/>
+            </if>
+            <else>
+              <group delimiter=" ">
+                <label variable="locator" form="long" text-case="capitalize-first"/>
+                <text variable="locator"/>
+              </group>
+            </else>
+          </choose>
+        </group>
+      </group>
+    </layout>
+  </citation>
+
+  <!-- ===================== REFERENCE LIST ===================== -->
+  <bibliography entry-spacing="1" second-field-align="flush">
+    <layout>
+      <text variable="citation-number" suffix="."/>
+      <choose>
+        <!-- JOURNAL ARTICLE -->
+        <if type="article-journal article-magazine article-newspaper" match="any">
+          <group delimiter=" ">
+            <text macro="author-or-title-first"/>
+            <group suffix=".">
+              <group delimiter=", ">
+                <text variable="container-title" font-style="italic"/>
+                <text macro="vol-issue"/>
+                <text macro="pages-or-article-number"/>
+              </group>
+            </group>
+            <text macro="year" suffix="."/>
+            <text macro="access-journal"/>
+          </group>
+        </if>
+        <!-- BOOK -->
+        <else-if type="book" match="any">
+          <group delimiter=" ">
+            <text macro="author-or-title-first"/>
+            <text macro="edition" suffix="."/>
+            <text macro="publisher" suffix="."/>
+            <text macro="year" suffix="."/>
+            <text macro="access-other"/>
+          </group>
+        </else-if>
+        <!-- BOOK CHAPTER -->
+        <else-if type="chapter" match="any">
+          <group delimiter=" ">
+            <text macro="author-or-title-first"/>
+            <group suffix="." delimiter=" ">
+              <text value="In:"/>
+              <names variable="editor">
+                <name and="text" delimiter=", " delimiter-precedes-last="never" initialize-with="." name-as-sort-order="all" sort-separator=", "/>
+                <label form="short" prefix=" (" suffix=")"/>
+              </names>
+              <text variable="container-title" font-style="italic"/>
+            </group>
+            <text macro="publisher" suffix="."/>
+            <group suffix=".">
+              <label variable="page" form="short" plural="contextual" suffix=" "/>
+              <text variable="page"/>
+            </group>
+            <text macro="year" suffix="."/>
+            <text macro="access-other"/>
+          </group>
+        </else-if>
+        <!-- CONFERENCE PAPER -->
+        <else-if type="paper-conference" match="any">
+          <group delimiter=" ">
+            <text macro="author-or-title-first"/>
+            <group suffix="." delimiter=", ">
+              <text variable="container-title" font-style="italic"/>
+              <text variable="event"/>
+              <text variable="publisher-place"/>
+              <text macro="pages-or-article-number"/>
+            </group>
+            <text macro="year" suffix="."/>
+            <text macro="access-other"/>
+          </group>
+        </else-if>
+        <!-- WEBPAGE / POST -->
+        <else-if type="webpage post post-weblog" match="any">
+          <group delimiter=" ">
+            <text macro="author-or-title-first"/>
+            <text variable="container-title" font-style="italic" suffix="."/>
+            <text macro="year" suffix="."/>
+            <text macro="access-other"/>
+          </group>
+        </else-if>
+        <!-- THESIS / REPORT / EVERYTHING ELSE -->
+        <else>
+          <group delimiter=" ">
+            <text macro="author-or-title-first"/>
+            <text variable="genre" suffix="."/>
+            <text macro="publisher" suffix="."/>
+            <text macro="year" suffix="."/>
+            <text macro="access-other"/>
+          </group>
+        </else>
+      </choose>
+    </layout>
+  </bibliography>
+</style>
